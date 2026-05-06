@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busuu Exercise App</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f4f0; color: #1a1a18;
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .card { background: #fff; border-radius: 16px; padding: 2.5rem; max-width: 440px; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    h1 { font-size: 1.5rem; font-weight: 500; margin-bottom: .5rem; }
+    p.sub { color: #5f5e5a; font-size: .9rem; margin-bottom: 2rem; line-height: 1.5; }
+    label { display: block; font-size: .875rem; color: #5f5e5a; margin-bottom: .35rem; }
+    input, select {
+      display: block; width: 100%;
+      padding: .65rem .85rem;
+      border: 1px solid #d3d1c7;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      outline: none;
+      background: #fff;
+      transition: border-color .15s;
+    }
+    input:focus, select:focus { border-color: #7f77dd; }
+    button { width: 100%; padding: .75rem; background: #7f77dd; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background .15s; }
+    button:hover { background: #534ab7; }
+    button:disabled { background: #b4b2a9; cursor: not-allowed; }
+    .status { margin-top: 1.25rem; padding: .75rem 1rem; border-radius: 8px; font-size: .875rem; display: none; }
+    .status.info    { background: #e6f1fb; color: #0c447c; display: block; }
+    .status.success { background: #eaf3de; color: #27500a; display: block; }
+    .status.error   { background: #fcebeb; color: #791f1f; display: block; }
+    .note { font-size: .78rem; color: #888780; margin-top: 1.5rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Busuu Exercise App</h1>
+    <p class="sub">Sync your Busuu progress and generate personalised exercises.</p>
+
+    <label for="email">Your email (for identifying your data)</label>
+    <input type="email" id="email" placeholder="you@example.com">
+
+    <label for="language">Language you are learning</label>
+    <select id="language">
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="it">Italian</option>
+      <option value="pt">Portuguese</option>
+      <option value="zh">Chinese</option>
+      <option value="ja">Japanese</option>
+      <option value="ar">Arabic</option>
+      <option value="tr">Turkish</option>
+      <option value="pl">Polish</option>
+    </select>
+
+    <label for="native_language">Your native language</label>
+    <select id="native_language">
+      <option value="en">English</option>
+      <option value="ru">Russian</option>
+      <option value="de">German</option>
+      <option value="fr">French</option>
+      <option value="it">Italian</option>
+      <option value="pt">Portuguese</option>
+      <option value="zh">Chinese</option>
+      <option value="ja">Japanese</option>
+      <option value="ar">Arabic</option>
+      <option value="tr">Turkish</option>
+      <option value="pl">Polish</option>
+      <option value="uk">Ukrainian</option>
+    </select>
+
+    <label for="cookie_file">Cookie file path</label>
+    <input type="text" id="cookie_file" value="busuu_cookies.json">
+
+    <button id="sync-btn" onclick="startSync()">Sync my Busuu data</button>
+    <div class="status" id="status-box"></div>
+
+    <p class="note">Export your Busuu cookies using the Cookie-Editor Chrome extension, save as <code>busuu_cookies.json</code> in the project root, then click Sync.</p>
+  </div>
+
+  <script>
+    async function startSync() {
+      const email       = document.getElementById('email').value.trim();
+      const language    = document.getElementById('language').value;
+      const cookie_file = document.getElementById('cookie_file').value.trim();
+      const btn         = document.getElementById('sync-btn');
+      const native_language = document.getElementById('native_language').value;
+
+      if (!email) { showStatus('Please enter your email.', 'error'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Syncing…';
+      showStatus('Fetching your Busuu data…', 'info');
+
+      try {
+        const res = await fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, cookie_file, language, native_language}),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+        var msg = data.detail || 'Sync failed';
+        if (res.status === 401) {
+          msg = 'Session expired — please log into busuu.com, re-export cookies with Cookie-Editor, run <code>pbpaste > busuu_cookies.json</code> and try again.';
+        }
+        showStatus(msg, 'error'); 
+             } else {
+          showStatus(`Synced! ${data.vocab_synced} vocab items · ${data.grammar_synced} grammar topics.`, 'success');
+          setTimeout(() => window.location.href = `/dashboard?email=${encodeURIComponent(email)}`, 1500);
+        }
+      } catch (err) {
+        showStatus('Network error — is the server running?', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sync my Busuu data';
+      }
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('status-box');
+      el.innerHTML = msg;
+      el.className = `status ${type}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Busuu Exercise App</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f5f4f0; color: #1a1a18; padding: 2rem; }
+    .page { max-width: 960px; margin: 0 auto; }
+    .back { font-size: .875rem; color: #534ab7; text-decoration: none; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; font-weight: 500; margin-bottom: .25rem; }
+    .sub { color: #5f5e5a; font-size: .875rem; margin-bottom: 2rem; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat { background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; }
+    .stat .num { font-size: 2rem; font-weight: 500; }
+    .stat .lbl { font-size: .8rem; color: #5f5e5a; margin-top: .2rem; }
+    .section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .section h2 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    th { text-align: left; padding: .5rem .75rem; color: #888780; font-weight: 400; border-bottom: 1px solid #eee; }
+    td { padding: .5rem .75rem; border-bottom: 1px solid #f5f4f0; }
+    tr:last-child td { border-bottom: none; }
+    .bar-wrap { width: 60px; height: 5px; background: #f1efe8; border-radius: 3px; display: inline-block; vertical-align: middle; }
+    .bar { height: 100%; border-radius: 3px; background: #7f77dd; }
+    .pill { display: inline-block; padding: .15rem .5rem; border-radius: 20px; font-size: .75rem; }
+    .pill.weak { background: #faeeda; color: #633806; }
+    .pill.ok   { background: #eaf3de; color: #27500a; }
+    .cefr { display: inline-block; padding: .1rem .35rem; border-radius: 4px; font-size: .75rem; font-weight: 500; background: #eeedfe; color: #3c3489; }
+    .empty { color: #888780; font-size: .875rem; padding: .5rem 0; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a class="back" href="/">← Sync again</a>
+    <a class="back" href="/exercises?email={{ user.email }}" style="margin-left:1rem;">Exercises →</a>
+    <h1>Your Busuu progress</h1>
+    <p class="sub">
+      {{ user.email }} · {{ user.language | upper }} ·
+      last synced {{ user.last_sync.strftime('%d %b %Y, %H:%M') if user.last_sync else 'never' }}
+    </p>
+
+    <div class="stats">
+      <div class="stat"><div class="num">{{ vocab_count }}</div><div class="lbl">Vocabulary items</div></div>
+      <div class="stat"><div class="num">{{ weak_vocab }}</div><div class="lbl">Words to practise</div></div>
+      <div class="stat"><div class="num">{{ grammar_count }}</div><div class="lbl">Grammar topics</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Vocabulary — {{ vocab_count }} items (sorted weakest first)</h2>
+      {% if vocab %}
+      <table>
+        <thead>
+          <tr>
+            <th>{{ user.language | upper }} word</th>
+            <th>Translation</th>
+            <th>Strength</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for item in vocab[:100] %}
+        <tr>
+          <td><strong>{{ item.word }}</strong></td>
+          <td>{{ item.translation or '—' }}</td>
+          <td>
+            <span class="bar-wrap"><span class="bar" style="width:{{ (item.strength * 100)|int }}%"></span></span>
+            <small style="margin-left:.4rem; color:#888780">{{ item.strength_raw }}/5</small>
+          </td>
+          <td>
+            {% if item.strength_raw == 0 %}<span class="pill weak">needs practice</span>
+            {% elif item.strength_raw >= 4 %}<span class="pill ok">strong</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% if vocab|length > 100 %}
+        <p class="empty" style="margin-top:.75rem">Showing first 100 of {{ vocab|length }} items.</p>
+      {% endif %}
+      {% else %}
+        <p class="empty">No vocabulary data yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="section">
+      <h2>Grammar topics — {{ grammar_count }} topics (sorted weakest first)</h2>
+      {% if grammar %}
+      <table>
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Category</th>
+            <th>Level</th>
+            <th>Mastery</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for t in grammar %}
+        <tr>
+          <td><strong>{{ t.unit_name }}</strong></td>
+          <td>{{ t.topic_name or '—' }}</td>
+          <td>{% if t.cert_level %}<span class="cefr">{{ t.cert_level }}</span>{% else %}—{% endif %}</td>
+          <td>
+            <span class="bar-wrap"><span class="bar" style="width:{{ t.percentage }}%"></span></span>
+            <small style="margin-left:.4rem; color:#888780">{{ t.percentage }}%</small>
+          </td>
+          <td>
+            {% if t.strength <= 1 %}<span class="pill weak">needs practice</span>
+            {% elif t.strength >= 3 %}<span class="pill ok">strong</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p class="empty">No grammar data yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>

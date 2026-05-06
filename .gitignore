@@ -1,0 +1,14 @@
+.env
+busuu_cookies.json
+api_dump.json
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.pytest_cache/
+.DS_Store
+.vscode/
+\#
+empty
+file
+README (1).md

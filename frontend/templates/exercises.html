@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercises — Busuu Exercise App</title>
+  <link rel="stylesheet" href="/static/css/exercises.css">
+</head>
+<body>
+  <div class="page">
+    <div class="nav">
+      <a href="/dashboard?email={{ user.email }}">← Dashboard</a>
+    </div>
+    <h1>Exercises</h1>
+    <p class="sub">{{ user.email }} · {{ user.language | upper }}</p>
+
+    <!-- Generate card -->
+    <div class="card">
+      <h2>Generate a new exercise</h2>
+      <div class="type-btns">
+        <button class="type-btn active" onclick="selectType('short_story', this)">Short story</button>
+        <button class="type-btn" onclick="selectType('translation', this)">Translation</button>
+        <button class="type-btn" onclick="selectType('gap_fill', this)">Gap-fill</button>
+      </div>
+      <button class="btn-primary" id="gen-btn" onclick="generateExercise()">Generate</button>
+      <div class="status" id="gen-status"></div>
+
+      <div class="exercise-area" id="exercise-area">
+        <span class="difficulty-badge" id="difficulty-badge"></span>
+
+        <div id="short-story-area" style="display:none;">
+          <div class="story-title" id="story-title"></div>
+          <div class="story-text" id="story-text"></div>
+          <button class="btn-reveal" id="btn-reveal" onclick="toggleTranslation(event)">Show translation</button>
+          <div class="translation-box" id="translation-box"></div>
+          <div class="questions">
+            <h3>Comprehension questions</h3>
+            <div id="questions-list"></div>
+            <button class="btn-green" id="story-submit-btn" onclick="submitStoryAnswers()">Submit answers</button>
+          </div>
+          <div class="feedback-area" id="story-feedback-area"></div>
+        </div>
+
+        <div id="translation-area" style="display:none;">
+          <div class="trans-progress">Sentence <span id="trans-current">1</span> of <span id="trans-total">0</span></div>
+          <div class="trans-source" id="trans-source"></div>
+          <div class="trans-note">Translate into Spanish</div>
+          <div class="trans-answer-row">
+            <textarea id="trans-input" placeholder="Type your Spanish translation..." rows="2"></textarea>
+          </div>
+          <div class="trans-per-feedback" id="trans-per-feedback"></div>
+          <div class="trans-nav">
+            <button class="btn-green" id="trans-next-btn" onclick="transNext()">Check</button>
+            <div class="trans-dots" id="trans-dots"></div>
+          </div>
+          <div class="trans-summary" id="trans-summary">
+            <div class="trans-overall-feedback" id="trans-overall-feedback"></div>
+          </div>
+        </div>
+
+        <div id="gap-fill-area" style="display:none;">
+          <p class="gap-instructions" id="gap-instructions"></p>
+          <span class="word-bank-label">Word bank — drag words into the gaps</span>
+          <div class="word-bank" id="word-bank" ondragover="bankDragOver(event)" ondrop="bankDrop(event)"></div>
+          <div class="gap-text-wrap" id="gap-text"></div>
+          <button class="btn-green" id="gap-submit-btn" onclick="submitGapFill()">Check answers</button>
+          <div class="gap-feedback-area" id="gap-feedback-area"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- History card -->
+    <div class="card" id="history-card">
+      <h2>Recent exercises</h2>
+      {% for ex in exercises %}
+      <div class="history-item {% if ex.completed %}completed{% endif %}">
+        <div class="history-meta">
+          <span class="pill {{ ex.exercise_type }}">{{ ex.exercise_type | replace('_', ' ') }}</span>
+          {% if ex.difficulty %} · {{ ex.difficulty }}{% endif %}
+          · <span class="ex-time" data-utc="{{ ex.created_at.isoformat() }}"></span>
+          {% if ex.completed %} · completed{% endif %}
+        </div>
+        <div class="history-preview">{{ ex.content[:120] }}...</div>
+        {% if ex.feedback %}
+        <details style="margin-top:.5rem;">
+          <summary style="font-size:.8rem;color:#534ab7;cursor:pointer;">Show feedback</summary>
+          <div style="margin-top:.5rem;font-size:.85rem;white-space:pre-wrap;color:#3a3a38;">{{ ex.feedback }}</div>
+        </details>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- email from Jinja2 — must be before exercises.js -->
+  <script>var email = "{{ user.email }}";</script>
+  <script src="/static/js/exercises.js"></script>
+</body>
+</html>
