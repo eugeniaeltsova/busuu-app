@@ -91,7 +91,7 @@ Generate 6-8 sentences. Each sentence must have a clear, natural {tl} translatio
 Call the generate_translation tool with the result."""
 
 
-def gap_fill_user_prompt(
+def gap_fill_step1_prompt(
     vocab_str: str,
     grammar_str: str,
     user_level: str = "A2",
@@ -99,20 +99,35 @@ def gap_fill_user_prompt(
     native_language: str = "en",
 ) -> str:
     tl = lang_name(target_language)
-    nl = lang_name(native_language)
-    return f"""Generate a gap-fill exercise in {tl} for a {nl}-speaking learner at {user_level} level.
+    return f"""Write a short paragraph or story in {tl} (8-10 sentences) for a learner at {user_level} level, using some of the words from {vocab_str} and some topics from {grammar_str}.
+The text must be a single coherent naturally sounding text in {tl} with a clear narrative flow — NOT a numbered list of separate sentences.
 
-The exercise must be a single coherent text in {tl} — NOT a numbered list of separate sentences.
-Write a short paragraph or story (5-8 sentences) with natural flow, then replace
-target vocabulary words with [___]. The text must read naturally when gaps are filled.
-
-Vocabulary to use for the gaps:
+Use grammar topics from {grammar_str} and vocabulary from {vocab_str} ONLY where they fit naturally in context. Do not use vocabulary items as direct quotes or dialogue.
+Integrate them naturally into the narrative as part of normal sentences.
+Vocabulary (use where natural):
 {vocab_str}
 
-Grammar topics to practise:
+Grammar topics (use where natural):
 {grammar_str}
 
-Instructions for the learner must be in {nl}.
+Return only the {tl} text — no gaps, no explanations, no formatting."""
+
+
+def gap_fill_step2_prompt(paragraph: str, target_language: str = "es", native_language: str = "en") -> str:
+    tl = lang_name(target_language)
+    nl = lang_name(native_language)
+    return f"""Given this {tl} text, create a gap-fill exercise.
+
+Text:
+{paragraph}
+
+Instructions:
+- Replace 6-8 words or short phrases with [___]
+- Choose words that are interesting to practise — vocabulary items, verb forms, connectors
+- Keep the gaps challenging but fair
+- Add 3-4 distractor words to the word bank that do not appear in the text
+- The instructions for the learner must be in {nl}
+
 Call the generate_gap_fill tool with the result."""
 
 
