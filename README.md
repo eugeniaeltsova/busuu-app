@@ -12,6 +12,26 @@ Syncs your Busuu vocabulary and grammar progress via the internal API, stores it
    - **Gap-fill** — a gap text with blanks drawn from grammar topics and vocabulary
 4. **Feedback** — submits your answers to the LLM and returns corrections with explanations in your native language
 
+## Screenshots
+
+**Sync — enter your email, target language, and cookie file to pull your Busuu data**
+![Start page](screenshots/Start_page-1.png)
+
+**Dashboard — vocabulary and grammar sorted by mastery, so you know exactly what to practise**
+![Dashboard](screenshots/Dashboard-1.png)
+
+**Exercises — choose a type, generate, and work through recent exercises**
+![Exercises](screenshots/Exercises-1.png)
+
+**Short story — a narrative built from your weak vocabulary with a full translation**
+![Short story](screenshots/Short_Story-1.png)
+
+**Translation — translate sentences targeting your weakest vocab, with instant feedback**
+![Translation](screenshots/Translation-1.png)
+
+**Gap-fill — complete a passage using a word bank drawn from your grammar topics and vocabulary**
+![Gap-fill](screenshots/Gap_Text-1.png)
+
 ## Project structure
 
 ```
@@ -147,6 +167,8 @@ All data is upserted (insert or update) so re-syncing is safe.
 4. The selected vocab and grammar are formatted into a prompt and sent to Azure OpenAI with a function-calling tool schema
 5. The model returns a structured response (short story / translation sentences / gap-fill text) that is parsed and stored in the database
 6. After submission, your answer is sent to the feedback prompt and corrections are returned
+
+NB: If generated texts look like your fever dreams, try reducing the temperature settings for short story and gap text generation clients. 
 
 ## Supported languages
 
