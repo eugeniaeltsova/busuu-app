@@ -14,11 +14,7 @@ class Settings(BaseSettings):
     AZURE_OPENAI_DEPLOYMENT:  str = "gpt-4o"
     AZURE_OPENAI_API_VERSION: str = "2024-10-21"
 
-    # Separate Azure resource for image generation (gpt-image-1)
-    AZURE_OPENAI_IMAGE_API_KEY:     str = ""
-    AZURE_OPENAI_IMAGE_ENDPOINT:    str = ""
-    AZURE_OPENAI_IMAGE_DEPLOYMENT:  str = "gpt-image-1"
-    AZURE_OPENAI_IMAGE_API_VERSION: str = "2025-04-01-preview"
+  
 
 
 settings = Settings()
