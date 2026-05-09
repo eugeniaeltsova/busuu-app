@@ -56,7 +56,7 @@ class GrammarOut(BaseModel):
     id:         int
     unit_name:  str
     topic_name: str | None
-    cert_level: str | None
+    cefr_level: str | None
     strength:   int
     percentage: int
     completed:  bool

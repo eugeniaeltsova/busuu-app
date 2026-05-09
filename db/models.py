@@ -60,7 +60,7 @@ class GrammarTopic(Base):
     busuu_topic_id  = Column(String(128), nullable=True)
     unit_name       = Column(String(256), nullable=False)
     topic_name      = Column(String(256), nullable=True)   # category name
-    cert_level      = Column(String(4),   nullable=True)
+    cefr_level      = Column(String(4),   nullable=True)
     strength        = Column(Integer,     default=0)       # 0–4 from Busuu
     strength_norm   = Column(Float,       default=0.0)     # 0.0–1.0
     percentage      = Column(Integer,     default=0)       # 0–100
