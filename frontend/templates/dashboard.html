@@ -102,7 +102,7 @@
         <tr>
           <td><strong>{{ t.unit_name }}</strong></td>
           <td>{{ t.topic_name or '—' }}</td>
-          <td>{% if t.cert_level %}<span class="cefr">{{ t.cert_level }}</span>{% else %}—{% endif %}</td>
+          <td>{% if t.cefr_level %}<span class="cefr">{{ t.cefr_level }}</span>{% else %}—{% endif %}</td>
           <td>
             <span class="bar-wrap"><span class="bar" style="width:{{ t.percentage }}%"></span></span>
             <small style="margin-left:.4rem; color:#888780">{{ t.percentage }}%</small>

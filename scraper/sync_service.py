@@ -108,7 +108,7 @@ async def sync_user(
             busuu_topic_id = topic["busuu_topic_id"],
             unit_name      = topic["unit_name"],
             topic_name     = topic.get("topic_name", ""),
-            cert_level     = topic.get("cert_level", ""),
+            cefr_level     = topic.get("cefr_level", ""),
             strength       = topic["strength"],
             strength_norm  = topic["strength_norm"],
             percentage     = topic["percentage"],
@@ -124,7 +124,7 @@ async def sync_user(
                 set_={
                     "unit_name":     values["unit_name"],
                     "topic_name":    values["topic_name"],
-                    "cert_level":    values["cert_level"],
+                    "cefr_level":    values["cefr_level"],
                     "strength":      values["strength"],
                     "strength_norm": values["strength_norm"],
                     "percentage":    values["percentage"],

@@ -70,7 +70,7 @@ def format_vocab(items: list[VocabItem]) -> str:
 def format_grammar(items: list[GrammarTopic]) -> str:
     """Format grammar topics as a readable list for the prompt."""
     return "\n".join(
-        f"  - {g.unit_name} ({g.cert_level or '?'}, mastery {g.percentage}%)"
+        f"  - {g.unit_name} ({g.cefr_level or '?'}, mastery {g.percentage}%)"
         for g in items
     )
 
@@ -89,7 +89,7 @@ def infer_user_level(grammar: list[GrammarTopic]) -> str:
         return "A2"
     level_counts: dict[str, int] = {}
     for g in grammar:
-        level = (g.cert_level or "").upper().strip()
+        level = (g.cefr_level or "").upper().strip()
         if level in CEFR_ORDER and g.completed:
             level_counts[level] = level_counts.get(level, 0) + 1
     if not level_counts:

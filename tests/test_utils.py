@@ -19,17 +19,17 @@ def make_vocab(strength_raw: int, word: str = "test") -> MagicMock:
     v.strength_raw = strength_raw
     v.word = word
     v.translation = f"{word}_translation"
-    v.cert_level = None
+    v.cefr_level = None
     return v
 
 
-def make_grammar(strength: int, cert_level: str = "A2", completed: bool = True) -> MagicMock:
+def make_grammar(strength: int, cefr_level: str = "A2", completed: bool = True) -> MagicMock:
     """Create a mock GrammarTopic."""
     g = MagicMock()
     g.strength = strength
-    g.cert_level = cert_level
+    g.cefr_level = cefr_level
     g.completed = completed
-    g.unit_name = f"Topic {cert_level}"
+    g.unit_name = f"Topic {cefr_level}"
     g.percentage = 70
     return g
 
