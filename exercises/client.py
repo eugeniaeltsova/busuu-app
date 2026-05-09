@@ -1,7 +1,7 @@
 """
 exercises/client.py
 
-Azure OpenAI clients — one for text (GPT-4o), one for images (gpt-image-1).
+Azure OpenAI client for text generation
 Kept as factory functions so config is always read fresh.
 """
 from __future__ import annotations
