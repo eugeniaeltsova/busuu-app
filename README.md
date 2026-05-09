@@ -6,11 +6,11 @@ Syncs your Busuu vocabulary and grammar progress via the internal API, stores it
 
 1. **Sync** — reads your Busuu session cookies and pulls vocab + grammar data from Busuu's internal API into a PostgreSQL database
 2. **Dashboard** — shows all vocabulary items and grammar topics sorted by mastery, so you can see exactly what needs work
-3. **Exercises** — generates three types of AI-powered exercises tailored to your weakest items:
-   - **Short story** — a short narrative using your weak vocab, with comprehension questions
-   - **Translation** — sentences to translate targeting weak vocabulary
-   - **Gap-fill** — a passage with blanks drawn from weak grammar topics and vocabulary
-4. **Feedback** — submits your answers to the LLM and returns corrections with explanations
+3. **Exercises** — generates three types of AI-powered exercises tailored to practice your weakest items:
+   - **Short story** — a short narrative using your vocab, with comprehension questions
+   - **Translation** — sentences to translate targeting vocabulary
+   - **Gap-fill** — a gap text with blanks drawn from grammar topics and vocabulary
+4. **Feedback** — submits your answers to the LLM and returns corrections with explanations in your native language
 
 ## Project structure
 
@@ -63,9 +63,27 @@ busuu-app/
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
 
-### 2. Configure environment
+### 2. Set up the database
+
+The app uses PostgreSQL. The easiest free option is [Supabase](https://supabase.com):
+
+1. Create a free account at supabase.com
+2. Click **New project**, set a database password
+3. Go to **Settings → Database** and copy the connection string
+4. Format it for the app:
+```
+DATABASE_URL=postgresql+asyncpg://postgres:YOUR-PASSWORD@db.xxxx.supabase.co:5432/postgres
+
+5. Paste it into your `.env` file
+
+The app creates all tables automatically on first startup — no manual migrations needed.
+
+If Supabase asks for a port, use `5432` (direct connection).
+If you see a connection refused error, check that you're using the **Direct connection** string, not the pooler.
+
+
+### 3. Configure environment
 
 Copy `.env.example` to `.env` and fill in the values:
 
@@ -85,7 +103,7 @@ AZURE_OPENAI_API_VERSION=2024-10-21
 
 The app creates tables automatically on first startup via `create_all()`.
 
-### 3. Export Busuu cookies
+### 4. Export Busuu cookies
 
 The app authenticates with Busuu using your browser session cookies — no password is ever stored.
 
@@ -99,13 +117,13 @@ The app authenticates with Busuu using your browser session cookies — no passw
 
 Cookies expire after ~6 months. Re-export when sync stops working.
 
-### 4. Run the app
+### 5. Run the app
 
 ```bash
 python run.py
 ```
 
-Open [http://localhost:8000](http://localhost:8000), enter your Busuu email and the path to your cookie file, select your target language, and click **Sync**.
+Open [http://localhost:8000](http://localhost:8000), enter your Busuu email and the path to your cookie file, select your target and native language, and click **Sync**.
 
 ## How the sync works
 
@@ -132,7 +150,7 @@ All data is upserted (insert or update) so re-syncing is safe.
 
 ## Supported languages
 
-Spanish, French, German, Italian, Portuguese, Chinese (Mandarin), Japanese, Arabic, Turkish, Polish
+Spanish, French, German, Russian, Italian, Portuguese, Chinese (Mandarin), Japanese, Arabic, Turkish, Polish
 
 ## Running tests
 
